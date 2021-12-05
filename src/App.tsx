@@ -4,7 +4,7 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import {StopWatch} from '../src/domain/StopWatch';
 
-/* Adds the table rows for each athlete */
+
 function AthleteTableRows <ListItem> ({
   items, 
   render,
@@ -27,7 +27,7 @@ function AthleteTableRows <ListItem> ({
     stopWatch.setIsActive(false);
     setStopWatch(new Map(tempMap));
   }
-   
+  /* start the timer */ 
   useEffect(() => {
     let intervalId: NodeJS.Timeout ; 
     let tempMap = new Map(stopwatchMap); 
