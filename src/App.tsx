@@ -13,11 +13,19 @@ function AthleteTableRows <ListItem> ({
   render:(item:ListItem) => ReactNode
 }) {
   
-  const [stopwatchMap, setStopWatch] = useState(new Map());  
-  // TODO: check if the stop watch already exists.  If so then set the running time and set isActive to true
+  const [stopwatchMap, setStopWatch] = useState(new Map());
   const createStopWatch = (key: number, startTimeMS: number) => {
-    let stopWatch = new StopWatch(true, startTimeMS);
-    setStopWatch(new Map(stopwatchMap.set(key,stopWatch)));
+    if(stopwatchMap.get(key)) {
+      let tempMap = new Map(stopwatchMap);
+      let stopWatch = tempMap.get(key);
+      stopWatch.setRunningTime(startTimeMS);
+      stopWatch.setStopTimeMS(null);
+      stopWatch.setIsActive(true);
+      setStopWatch(new Map(tempMap));
+    } else {
+      let stopWatch = new StopWatch(true, startTimeMS);
+      setStopWatch(new Map(stopwatchMap.set(key,stopWatch)));
+    }
   }
   
   const stopStopWatch = (key: number, stopTimeMS: number) => {
@@ -30,7 +38,7 @@ function AthleteTableRows <ListItem> ({
   /* start the timer */ 
   useEffect(() => {
     let intervalId: NodeJS.Timeout ; 
-    let tempMap = new Map(stopwatchMap); 
+    let tempMap = new Map<number,StopWatch>(stopwatchMap); 
     intervalId = setInterval(() => {
       tempMap.forEach((stopwatch: StopWatch, key: number) => {
         if (stopwatch.isActive) {
@@ -47,18 +55,17 @@ function AthleteTableRows <ListItem> ({
      {items.map((item, index)=> (
         <tr key={index}>
           <td>{index}</td>
-          <td>{render(item)}</td>
+          <td>{render(item)}</td>{/*TODO: change to getRunningTimeFormated  Update StopWatch to return formated time */}
           <td>{stopwatchMap.get(index) ? stopwatchMap.get(index).runningTimeMS : 0}</td>
-          {/* TODO: Disable if stopwatch.isActive is true */}
           <td>
-            <Button variant="primary" key={index} 
+            <Button variant="primary" key={index} disabled={stopwatchMap.get(index) ? stopwatchMap.get(index).isActive : false} 
               onClick={()=>(createStopWatch(index, Date.now()))}>
                 Start
             </Button> 
           </td>
           <td>
-            {/* TODO: Disable if stopwatch.isActive is false */}
             <Button variant="danger" key={index}
+              disabled={stopwatchMap.get(index) ? !stopwatchMap.get(index).isActive : true}
               onClick={()=> (stopStopWatch(index, Date.now()))}>
                 Stop
             </Button>
