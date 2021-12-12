@@ -1,7 +1,6 @@
 import React, { useEffect, ReactNode, useState } from 'react';
 import './App.css';
-import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
+import {Table, Button} from 'react-bootstrap';
 import {StopWatch} from '../src/domain/StopWatch';
 
 
@@ -51,12 +50,12 @@ function AthleteTableRows <ListItem> ({
     return () => clearInterval(intervalId);               
   }, [stopwatchMap])  
   return (
-    <>    
+    <>      
      {items.map((item, index)=> (
         <tr key={index}>
           <td>{index}</td>
           <td>{render(item)}</td>{/*TODO: change to getRunningTimeFormated  Update StopWatch to return formated time */}
-          <td>{stopwatchMap.get(index) ? stopwatchMap.get(index).runningTimeMS : 0}</td>
+          <td>{stopwatchMap.get(index) ? stopwatchMap.get(index).formatedRunningTime : "HH:MM:SS.MS"}</td>
           <td>
             <Button variant="primary" key={index} disabled={stopwatchMap.get(index) ? stopwatchMap.get(index).isActive : false} 
               onClick={()=>(createStopWatch(index, Date.now()))}>
