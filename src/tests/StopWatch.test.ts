@@ -23,3 +23,7 @@ test ('3600000 MS = 1 hour', () => {
     stopWatch.setRunningTime(3600000+stopWatch.startTimeMS);
     expect(stopWatch.formatedRunningTime).toEqual("01:00:00.00");
 });
+
+// test laps display one lap and multiple laps
+// test set lap
+// test running lap time
