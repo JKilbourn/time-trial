@@ -13,6 +13,7 @@ function AthleteTableRows <ListItem> ({
 }) {
   
   const [stopwatchMap, setStopWatch] = useState(new Map());
+
   const createStopWatch = (key: number, startTimeMS: number) => {
     if(stopwatchMap.get(key)) {
       let tempMap = new Map(stopwatchMap);
@@ -30,10 +31,22 @@ function AthleteTableRows <ListItem> ({
   const stopStopWatch = (key: number, stopTimeMS: number) => {
     let tempMap = new Map(stopwatchMap);
     let stopWatch = tempMap.get(key);
-    stopWatch.setStopTimeMS(stopTimeMS);
     stopWatch.setIsActive(false);
+    stopWatch.setStopTimeMS(stopTimeMS);
+    stopWatch.setLap(stopTimeMS);
+    stopWatch.setRunningTime(stopTimeMS);
+    stopWatch.setLapsDisplay();    
     setStopWatch(new Map(tempMap));
+    console.log(stopWatch);
   }
+
+  const lapStopWatch = (key: number, lapTimeMS: number) => {
+    let tempMap = new Map(stopwatchMap);
+    let stopWatch = tempMap.get(key);
+    stopWatch.setLap(lapTimeMS);
+    setStopWatch(new Map(tempMap));    
+  }
+
   /* start the timer */ 
   useEffect(() => {
     let intervalId: NodeJS.Timeout ; 
@@ -41,12 +54,14 @@ function AthleteTableRows <ListItem> ({
     intervalId = setInterval(() => {
       tempMap.forEach((stopwatch: StopWatch, key: number) => {
         if (stopwatch.isActive) {
-          stopwatch.setRunningTime(Date.now());
+          let time = Date.now();
+          stopwatch.setRunningTime(time);
+          stopwatch.setRunningLapTime(time);
           tempMap.set(key, stopwatch);
         }
       });
       setStopWatch(new Map(tempMap));
-    }, 250)  
+    }, 100)  
     return () => clearInterval(intervalId);               
   }, [stopwatchMap])  
   return (
@@ -54,8 +69,9 @@ function AthleteTableRows <ListItem> ({
      {items.map((item, index)=> (
         <tr key={index}>
           <td>{index}</td>
-          <td>{render(item)}</td>{/*TODO: change to getRunningTimeFormated  Update StopWatch to return formated time */}
+          <td>{render(item)}</td>
           <td>{stopwatchMap.get(index) ? stopwatchMap.get(index).formatedRunningTime : "HH:MM:SS.MS"}</td>
+          <td>{stopwatchMap.get(index) ? stopwatchMap.get(index).lapsDisplayString : '' } </td>
           <td>
             <Button variant="primary" key={index} disabled={stopwatchMap.get(index) ? stopwatchMap.get(index).isActive : false} 
               onClick={()=>(createStopWatch(index, Date.now()))}>
@@ -67,6 +83,13 @@ function AthleteTableRows <ListItem> ({
               disabled={stopwatchMap.get(index) ? !stopwatchMap.get(index).isActive : true}
               onClick={()=> (stopStopWatch(index, Date.now()))}>
                 Stop
+            </Button>
+          </td>
+          <td>
+            <Button variant="warning" key={index}
+              disabled={stopwatchMap.get(index) ? !stopwatchMap.get(index).isActive : false}
+              onClick={()=> (lapStopWatch(index, Date.now()))}>
+                Lap
             </Button>
           </td>
         </tr>
@@ -84,8 +107,10 @@ function App() {
           <th>Number</th>
           <th>Name</th>
           <th>Time</th>
+          <th>Lap</th>
           <th>Start</th>
           <th>Stop</th>
+          <th>Lap</th>
         </tr>
       </thead>
       <tbody>
