@@ -2,14 +2,16 @@ import React, { useEffect, ReactNode, useState } from 'react';
 import './App.css';
 import {Table, Button} from 'react-bootstrap';
 import {StopWatch} from '../src/domain/StopWatch';
+import {Athlete} from '../src/domain/Athlete';
+import {AthleteData} from '../src/data/AthleteData';
 
 
 function AthleteTableRows <ListItem> ({
   items, 
   render,
 }: {
-  items: ListItem[],
-  render:(item:ListItem) => ReactNode
+  items: Athlete[],
+  render:(item:String) => ReactNode
 }) {
   
   const [stopwatchMap, setStopWatch] = useState(new Map());
@@ -47,6 +49,10 @@ function AthleteTableRows <ListItem> ({
     setStopWatch(new Map(tempMap));    
   }
 
+  const getAthleteList = () => {
+
+  } 
+
   /* start the timer */ 
   useEffect(() => {
     let intervalId: NodeJS.Timeout ; 
@@ -67,32 +73,34 @@ function AthleteTableRows <ListItem> ({
   return (
     <>      
      {items.map((item, index)=> (
-        <tr key={index}>
-          <td>{index}</td>
-          <td>{render(item)}</td>
-          <td>{stopwatchMap.get(index) ? stopwatchMap.get(index).formatedRunningTime : "HH:MM:SS.MS"}</td>
-          <td>{stopwatchMap.get(index) ? stopwatchMap.get(index).lapsDisplayString : '' } </td>
-          <td>
-            <Button variant="primary" key={index} disabled={stopwatchMap.get(index) ? stopwatchMap.get(index).isActive : false} 
-              onClick={()=>(createStopWatch(index, Date.now()))}>
-                Start
-            </Button> 
-          </td>
-          <td>
-            <Button variant="danger" key={index}
-              disabled={stopwatchMap.get(index) ? !stopwatchMap.get(index).isActive : true}
-              onClick={()=> (stopStopWatch(index, Date.now()))}>
-                Stop
-            </Button>
-          </td>
-          <td>
-            <Button variant="warning" key={index}
-              disabled={stopwatchMap.get(index) ? !stopwatchMap.get(index).isActive : false}
-              onClick={()=> (lapStopWatch(index, Date.now()))}>
-                Lap
-            </Button>
-          </td>
-        </tr>
+               
+          <tr key={item.id}>
+            <td>{item.id}</td>
+            <td>{render(item.getFirstNameLastName())}</td>
+            <td>{stopwatchMap.get(index) ? stopwatchMap.get(index).formatedRunningTime : "HH:MM:SS.MS"}</td>
+            <td>{stopwatchMap.get(index) ? stopwatchMap.get(index).lapsDisplayString : '' } </td>
+            <td>
+              <Button variant="primary" key={index} disabled={stopwatchMap.get(index) ? stopwatchMap.get(index).isActive : false} 
+                onClick={()=>(createStopWatch(index, Date.now()))}>
+                  Start
+              </Button> 
+            </td>
+            <td>
+              <Button variant="danger" key={index}
+                disabled={stopwatchMap.get(index) ? !stopwatchMap.get(index).isActive : true}
+                onClick={()=> (stopStopWatch(index, Date.now()))}>
+                  Stop
+              </Button>
+            </td>
+            <td>
+              <Button variant="warning" key={index}
+                disabled={stopwatchMap.get(index) ? !stopwatchMap.get(index).isActive : false}
+                onClick={()=> (lapStopWatch(index, Date.now()))}>
+                  Lap
+              </Button>
+            </td>
+          </tr>
+        
       ))}
     </>    
   )
@@ -115,8 +123,8 @@ function App() {
       </thead>
       <tbody>
         <AthleteTableRows 
-          items={["Athlete 1", "Athlete 2"]}
-          render={(item:string) => <>{item}</>}
+          items={new AthleteData().timeTrailAthleteArray}
+          render={(item:String) => <>{item}</>}
         ></AthleteTableRows>
       </tbody>
     </Table>
